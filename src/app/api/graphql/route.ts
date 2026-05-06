@@ -1,30 +1,22 @@
-import { createYoga, createSchema } from "graphql-yoga";
-import { NextRequest } from "next/server";
+import { ApolloServer } from "@apollo/server";
+import { startServerAndCreateNextHandler } from "@as-integrations/next";
 
-const { handleRequest } = createYoga({
-  schema: createSchema({
-    typeDefs: `
-      type Query { test: String }
-      type Mutation { createMessage(text: String!): String }
-    `,
-    resolvers: {
-      Query: {
-        test: () => "Test from backend",
-      },
-      Mutation: {
-        createMessage: (_: unknown, { text }: { text: string }) =>
-          `Created: ${text}`,
-      },
+const server = new ApolloServer({
+  typeDefs: `
+    type Query { test: String }
+    type Mutation { createMessage(text: String!): String }
+  `,
+  resolvers: {
+    Query: {
+      test: () => "Test from backend",
     },
-  }),
-  graphqlEndpoint: "/api/graphql",
-  fetchAPI: { Request: Request, Response: Response },
+    Mutation: {
+      createMessage: (_: unknown, { text }: { text: string }) =>
+        `Created: ${text}`,
+    },
+  },
 });
 
-export async function GET(request: NextRequest) {
-  return handleRequest(request, {});
-}
+const handler = startServerAndCreateNextHandler(server);
 
-export async function POST(request: NextRequest) {
-  return handleRequest(request, {});
-}
+export { handler as GET, handler as POST };
