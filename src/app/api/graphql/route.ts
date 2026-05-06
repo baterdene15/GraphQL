@@ -3,10 +3,17 @@ import { NextRequest } from "next/server";
 
 const { handleRequest } = createYoga({
   schema: createSchema({
-    typeDefs: `type Query { test: String }`,
+    typeDefs: `
+      type Query { test: String }
+      type Mutation { createMessage(text: String!): String }
+    `,
     resolvers: {
       Query: {
         test: () => "Test from backend",
+      },
+      Mutation: {
+        createMessage: (_: unknown, { text }: { text: string }) =>
+          `Created: ${text}`,
       },
     },
   }),
